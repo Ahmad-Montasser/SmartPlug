@@ -1,8 +1,10 @@
-package com.example.smartplug;
+package com.example.smartplug.UI;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
+
+import com.example.smartplug.R;
 
 public class MainActivity extends AppCompatActivity {
 
