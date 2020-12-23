@@ -1,5 +1,8 @@
 package com.example.smartplug.UI;
 
+import android.os.Bundle;
+import android.view.MenuItem;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -7,10 +10,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.Window;
 
 import com.example.smartplug.R;
 import com.google.android.material.navigation.NavigationView;
@@ -77,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass;
+        fragmentClass = Plugs.class;
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
                 fragmentClass = Plugs.class;
@@ -84,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.nav_second_fragment:
                 fragmentClass = AddLocation.class;
                 break;
-            default:
-                fragmentClass = Plugs.class;
         }
 
         try {
