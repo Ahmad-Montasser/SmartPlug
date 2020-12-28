@@ -44,7 +44,6 @@ public class AddLocation extends Fragment implements LocationListener {
     DatabaseReference myRef;
     RecyclerView recyclerView;
     double locationLatitude = 2, locationLongitude = 2;
-    LinearLayout linearLayout;
     String locationName;
     FloatingActionButton addLocationButton;
     LocationManager locationManager;
