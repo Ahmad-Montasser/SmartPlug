@@ -5,32 +5,22 @@
     android:textAlignment="center">
 
     <TextView
-        android:id="@+id/locationNameTextView"
+        android:id="@+id/plugNameTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@drawable/text_view_border"
-        android:text="Longitude"
+        android:text=""
         android:textAlignment="center"
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/latitudeTextView"
+        android:id="@+id/plugLocationTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:background="@drawable/text_view_border"
-        android:text="Longitude"
-        android:textAlignment="center"
-        android:textSize="24sp" />
-
-    <TextView
-        android:id="@+id/longitudeTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@drawable/text_view_border"
-        android:text="Longitude"
+        android:text=""
         android:textAlignment="center"
         android:textSize="24sp" />
 </LinearLayout>

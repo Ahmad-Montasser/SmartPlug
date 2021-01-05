@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main_layout);
         // Set a Toolbar to replace the ActionBar.
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,13 +77,13 @@ public class MainActivity extends AppCompatActivity {
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass;
-        fragmentClass = Plugs.class;
+        fragmentClass = PlugFragment.class;
         switch(menuItem.getItemId()) {
             case R.id.nav_first_fragment:
-                fragmentClass = Plugs.class;
+                fragmentClass = PlugFragment.class;
                 break;
             case R.id.nav_second_fragment:
-                fragmentClass = AddLocation.class;
+                fragmentClass = AddLocationFragment.class;
                 break;
         }
 
