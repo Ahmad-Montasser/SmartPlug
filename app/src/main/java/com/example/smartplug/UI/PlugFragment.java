@@ -2,14 +2,19 @@ package com.example.smartplug.UI;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.smartplug.Model.CustomViewModel;
+import com.example.smartplug.Model.MyLocation;
 import com.example.smartplug.Model.MyPlug;
 import com.example.smartplug.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -24,10 +29,9 @@ public class PlugFragment extends Fragment {
     ArrayList<MyPlug> plugList;
     Context context;
     CustomAdapter plugAdapter;
-
-    FirebaseDatabase database;
-    DatabaseReference myRef;
     ButtonListener buttonListener;
+    private final String TAG = "PLUGFRAGMENT ======";
+    CustomViewModel customViewModel;
 
     public PlugFragment() {
         super(R.layout.plugs_layout);
@@ -39,18 +43,26 @@ public class PlugFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         recyclerView = getView().findViewById(R.id.plugRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
-        init();
+        recyclerView = getView().findViewById(R.id.plugRecyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+        addPlugButton = getView().findViewById(R.id.addPlugButton);
+        buttonListener = new ButtonListener(this);
+        addPlugButton.setOnClickListener(buttonListener);
+        plugList = new ArrayList<MyPlug>();
+        plugAdapter = new CustomAdapter(plugList, 1);
+        recyclerView.setAdapter(plugAdapter);
+        customViewModel = ViewModelProviders.of(this).get(CustomViewModel.class);
+        customViewModel.getPlugLiveData().observe(getViewLifecycleOwner(), new Observer<MyPlug>() {
+            @Override
+            public void onChanged(MyPlug myPlug) {
+                Log.d(TAG, myPlug.getPlugName());
+                plugList.add(myPlug);
+                plugAdapter.notifyItemRangeInserted(0, plugList.size());
+                plugAdapter.notifyItemRangeRemoved(0, plugList.size());
+            }
+        });
     }
 
-    void init() {
-        context = getActivity();
-        database = FirebaseDatabase.getInstance();
-        plugList = new ArrayList<MyPlug>();
-        buttonListener = new ButtonListener(context);
-        myRef = database.getReference("/Plugs");
-        addPlugButton = getView().findViewById(R.id.addPlugButton);
-        addPlugButton.setOnClickListener(buttonListener);
-    }
 
 
 }

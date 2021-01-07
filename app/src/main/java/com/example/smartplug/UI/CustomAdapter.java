@@ -57,7 +57,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             viewHolder.getLongitudeTextView().setText("Long: " + locationLocalDataSet.get(position).getLongitude());
         } else {
             viewHolder.getPlugNameTextView().setText(plugLocalDataSet.get(position).getPlugName());
-            viewHolder.getPlugLocationTextView().setText(plugLocalDataSet.get(position).getMl().getName());
+            viewHolder.getPlugLocationTextView().setText(plugLocalDataSet.get(position).getMl());
         }
     }
 

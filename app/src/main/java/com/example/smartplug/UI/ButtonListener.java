@@ -7,6 +7,10 @@ import android.text.InputType;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.example.smartplug.Model.CustomViewModel;
 import com.example.smartplug.R;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -14,36 +18,30 @@ import com.google.firebase.database.FirebaseDatabase;
 public class ButtonListener implements View.OnClickListener {
     double locationLatitude = 2, locationLongitude = 2;
     String locationName, plugName;
-    FirebaseDatabase database;
-    DatabaseReference myRef;
     Context context;
+    CustomViewModel customViewModel;
+    Fragment f;
 
-    ButtonListener(Context c) {
-        context = c;
+    ButtonListener(Fragment f) {
+        context = f.getContext();
+        this.f = f;
     }
 
     @Override
     public void onClick(View view) {
-        database = FirebaseDatabase.getInstance();
         AlertDialog.Builder alertDialogueBuilder = new AlertDialog.Builder(context);
         final EditText input = new EditText(context);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         alertDialogueBuilder.setView(input);
+        customViewModel = ViewModelProviders.of(f).get(CustomViewModel.class);
         switch (view.getId()) {
             case R.id.addLocationButton:
-                myRef = database.getReference("/Locations");
                 alertDialogueBuilder.setTitle("Enter the Location Name");
-                // Set up the input
-                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-
-                // Set up the buttons
                 alertDialogueBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         locationName = input.getText().toString();
-                        myRef.child(locationName).push();
-                        myRef.child(locationName).child("Latitude").setValue(locationLatitude);
-                        myRef.child(locationName).child("Longitude").setValue(locationLongitude);
+                        customViewModel.addLocation(locationName);
                     }
                 });
                 alertDialogueBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -55,16 +53,12 @@ public class ButtonListener implements View.OnClickListener {
                 alertDialogueBuilder.show();
                 break;
             case R.id.addPlugButton:
-                myRef = database.getReference("/Plugs");
                 alertDialogueBuilder.setTitle("Enter the Plug Name");
-                // Set up the input
-                // Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
-                // Set up the buttons
                 alertDialogueBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         plugName = input.getText().toString();
-
+                        customViewModel.addPlug(plugName, "sds");
                     }
                 });
                 alertDialogueBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -75,7 +69,6 @@ public class ButtonListener implements View.OnClickListener {
                 });
 
                 alertDialogueBuilder.show();
-                myRef.child(plugName).push();
                 break;
         }
     }

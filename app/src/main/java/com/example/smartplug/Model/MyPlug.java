@@ -1,16 +1,16 @@
 package com.example.smartplug.Model;
 
 public class MyPlug {
-    MyLocation ml;
+    String locationName;
     String plugName;
 
-    MyPlug(String name, MyLocation ml) {
-        this.ml = ml;
+    MyPlug(String name, String ml) {
+        this.locationName = ml;
         this.plugName = name;
     }
 
-    public MyLocation getMl() {
-        return ml;
+    public String getMl() {
+        return locationName;
     }
 
     public String getPlugName() {
