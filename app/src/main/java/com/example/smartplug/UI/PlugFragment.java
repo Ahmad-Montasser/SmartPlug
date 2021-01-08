@@ -13,13 +13,10 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.smartplug.Model.CustomViewModel;
-import com.example.smartplug.Model.MyLocation;
+import com.example.smartplug.ViewModel.CustomViewModel;
 import com.example.smartplug.Model.MyPlug;
 import com.example.smartplug.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -55,8 +52,8 @@ public class PlugFragment extends Fragment {
         customViewModel.getPlugLiveData().observe(getViewLifecycleOwner(), new Observer<MyPlug>() {
             @Override
             public void onChanged(MyPlug myPlug) {
-                Log.d(TAG, myPlug.getPlugName());
-                plugList.add(myPlug);
+                if (!plugList.contains(myPlug))
+                    plugList.add(myPlug);
                 plugAdapter.notifyItemRangeInserted(0, plugList.size());
                 plugAdapter.notifyItemRangeRemoved(0, plugList.size());
             }

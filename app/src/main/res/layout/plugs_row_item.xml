@@ -23,4 +23,20 @@
         android:text=""
         android:textAlignment="center"
         android:textSize="24sp" />
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/text_view_border">
+
+        <Switch
+            android:id="@+id/plugStatusSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text=""
+            android:textAlignment="center"
+            android:textSize="24sp" />
+    </RelativeLayout>
 </LinearLayout>

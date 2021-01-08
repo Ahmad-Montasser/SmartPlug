@@ -1,13 +1,12 @@
 package com.example.smartplug.UI;
 
-import android.app.AlertDialog;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-import android.text.InputType;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,21 +17,31 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.smartplug.Model.CustomViewModel;
+import com.example.smartplug.ViewModel.CustomViewModel;
 import com.example.smartplug.Model.MyLocation;
+import com.example.smartplug.Model.Permissions;
 import com.example.smartplug.R;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+
 
 public class AddLocationFragment extends Fragment {
+    int FINE_LOCATION_PERMISSION_REQUEST_CODE = 99;
+    int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 100;
+    int COARSE_LOCATION_PERMISSION_REQUEST_CODE = 101;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
+    private Boolean NeedToShowRequestPermissionRationale = true;
+    private int debug = 0;
     RecyclerView recyclerView;
     FloatingActionButton addLocationButton;
     private final String TAG = "ADDLOCATIONFRAGMENT ======";
@@ -41,8 +50,17 @@ public class AddLocationFragment extends Fragment {
     CustomAdapter locationAdapter;
     ButtonListener buttonListener;
     CustomViewModel customViewModel;
+
     public AddLocationFragment() {
         super(R.layout.add_location_layout);
+        context = getContext();
+    }
+
+    protected void createLocationRequest() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
     @Override
@@ -56,10 +74,12 @@ public class AddLocationFragment extends Fragment {
         locationList = new ArrayList<MyLocation>();
         locationAdapter = new CustomAdapter(locationList, 0);
         recyclerView.setAdapter(locationAdapter);
+        createLocationRequest();
         customViewModel = ViewModelProviders.of(this).get(CustomViewModel.class);
         customViewModel.getLocationLiveData().observe(getViewLifecycleOwner(), new Observer<MyLocation>() {
             @Override
             public void onChanged(MyLocation myLocation) {
+
                 if (!locationList.contains(myLocation))
                     locationList.add(myLocation);
                 Log.d(TAG, myLocation.getName());
@@ -68,9 +88,72 @@ public class AddLocationFragment extends Fragment {
             }
 
         });
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    Log.d("location", "Location received");
+                }
+            }
+        };
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Permissions.isAccessCoarseLocationGranted(getContext())) {
+            Log.d(TAG, "dfsfsdfsdfdsddf");
+            if (Permissions.isLocationEnabled(getActivity())) {
+                setUpLocationListener();
+            } else {
+                Permissions.showGPSNotEnabledDialog(getActivity());
+            }
+        } else {
+            Permissions.requestAccessFineLocationPermission(getActivity(), FINE_LOCATION_PERMISSION_REQUEST_CODE);
+            Permissions.requestAccessBackgroundLocationPermission(getActivity(), BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE);
+            Permissions.requestAccessCoarseLocationPermission(getActivity(), COARSE_LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
 
+    @SuppressLint("MissingPermission")
+    private void setUpLocationListener() {
+        Log.d(TAG, "setUpLocationListener");
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(getActivity());
+        fusedLocationClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null)
+                    Log.d("location", "Location received" + location.getLatitude() + " " + location.getLongitude());
+            }
+        });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == FINE_LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                if (Permissions.isLocationEnabled(context))
+                    setUpLocationListener();
+                else
+                    Permissions.showGPSNotEnabledDialog(context);
+            } else if (requestCode == BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE) {
+
+            } else {
+                if (NeedToShowRequestPermissionRationale) {
+                    Permissions.ShowRequestPermissionRationale(context, getActivity(), FINE_LOCATION_PERMISSION_REQUEST_CODE);
+                    NeedToShowRequestPermissionRationale = false;
+                } else {
+
+                    Toast.makeText(context, "Permission Not Granted", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+    }
 }

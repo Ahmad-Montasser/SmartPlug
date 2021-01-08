@@ -1,10 +1,14 @@
-package com.example.smartplug.Model;
+package com.example.smartplug.ViewModel;
 
 import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
+
+import com.example.smartplug.Model.DBInterface;
+import com.example.smartplug.Model.MyLocation;
+import com.example.smartplug.Model.MyPlug;
 
 public class CustomViewModel extends AndroidViewModel {
     private DBInterface DBI;
@@ -33,4 +37,9 @@ public class CustomViewModel extends AndroidViewModel {
     public void addPlug(String plugName, String locationName) {
         DBI.addPlug(plugName, locationName);
     }
+
+    public void togglePlug(String plugName) {
+        DBI.togglePlug(plugName);
+    }
+
 }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.provider.Settings;
+import android.util.Log;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
@@ -17,10 +18,25 @@ public class Permissions {
     /**
      * Function to request permission from the user
      */
-    public static void requestAccessFineLocationPermission(Activity AppCompatActivity, int MY_PERMISSIONS_REQUEST_LOCATION) {
+    public static void requestAccessFineLocationPermission(Activity AppCompatActivity, int MY_PERMISSIONS_REQUEST_FINE_LOCATION) {
         ActivityCompat.requestPermissions(AppCompatActivity,
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                MY_PERMISSIONS_REQUEST_LOCATION);
+                MY_PERMISSIONS_REQUEST_FINE_LOCATION);
+    }
+
+    /**
+     * Function to request permission from the user
+     */
+    public static void requestAccessBackgroundLocationPermission(Activity AppCompatActivity, int MY_PERMISSIONS_REQUEST_BACKGROUND_LOCATION) {
+        ActivityCompat.requestPermissions(AppCompatActivity,
+                new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                MY_PERMISSIONS_REQUEST_BACKGROUND_LOCATION);
+    }
+
+    public static void requestAccessCoarseLocationPermission(Activity AppCompatActivity, int MY_PERMISSIONS_REQUEST_COARSE_LOCATION) {
+        ActivityCompat.requestPermissions(AppCompatActivity,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                MY_PERMISSIONS_REQUEST_COARSE_LOCATION);
     }
 
 
@@ -29,6 +45,20 @@ public class Permissions {
      */
     public static Boolean isAccessFineLocationGranted(Context context) {
         return (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    /**
+     * Function to check if the location permissions are granted or not
+     */
+    public static Boolean isAccessBackgroundLocationGranted(Context context) {
+        return (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    /**
+     * Function to check if the location permissions are granted or not
+     */
+    public static Boolean isAccessCoarseLocationGranted(Context context) {
+        return (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
     }
 
     /**

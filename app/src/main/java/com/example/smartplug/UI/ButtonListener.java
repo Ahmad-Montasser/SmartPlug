@@ -10,10 +10,8 @@ import android.widget.EditText;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.example.smartplug.Model.CustomViewModel;
+import com.example.smartplug.ViewModel.CustomViewModel;
 import com.example.smartplug.R;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class ButtonListener implements View.OnClickListener {
     double locationLatitude = 2, locationLongitude = 2;

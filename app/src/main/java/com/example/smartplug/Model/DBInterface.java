@@ -60,8 +60,9 @@ public class DBInterface implements LocationListener {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     if (ds.getKey() != null) {
-                        if (ds.hasChild("Location")) {
-                            plug = new MyPlug(ds.getKey(), ds.child("Location").getValue().toString());
+                        if (ds.hasChild("Location") && ds.hasChild("Status")) {
+                            plug = new MyPlug(ds.getKey(), ds.child("Location").getValue().toString(),
+                                    Integer.parseInt(ds.child("Status").getValue().toString()));
                             plugLiveList.setValue(plug);
                         }
                     }
@@ -79,6 +80,8 @@ public class DBInterface implements LocationListener {
     public void addPlug(String plugName, String locationName) {
         myPlugRef.child(plugName).push();
         myPlugRef.child(plugName).child("Location").setValue(locationName);
+        myPlugRef.child(plugName).child("Status").setValue(0);
+
     }
 
     public void addLocation(String locationName) {
@@ -108,5 +111,36 @@ public class DBInterface implements LocationListener {
     @Override
     public void onProviderDisabled(@NonNull String provider) {
 
+    }
+
+    public void togglePlug(String plugName) {
+        myPlugRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    if (ds.getKey().equals(plugName)) {
+                        if (ds.hasChild("Location") && ds.hasChild("Status")) {
+                            MyPlug dummyPlug;
+                            if (plug.getStatus() == 0) {
+                                myPlugRef.child(plugName).child("Status").setValue(1);
+                                dummyPlug = new MyPlug(ds.getKey(), ds.child("Location").getValue().toString(),
+                                        1);
+                            } else {
+                                myPlugRef.child(plugName).child("Status").setValue(0);
+                                dummyPlug = new MyPlug(ds.getKey(), ds.child("Location").getValue().toString(),
+                                        0);
+                            }
+                            plugLiveList.setValue(dummyPlug);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.d("Database Plug Error Plug ======", error.getMessage());
+
+            }
+        });
     }
 }

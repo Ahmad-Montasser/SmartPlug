@@ -3,6 +3,7 @@ package com.example.smartplug.UI;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -57,7 +58,11 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             viewHolder.getLongitudeTextView().setText("Long: " + locationLocalDataSet.get(position).getLongitude());
         } else {
             viewHolder.getPlugNameTextView().setText(plugLocalDataSet.get(position).getPlugName());
-            viewHolder.getPlugLocationTextView().setText(plugLocalDataSet.get(position).getMl());
+            viewHolder.getPlugLocationTextView().setText(plugLocalDataSet.get(position).getLocationName());
+            if (plugLocalDataSet.get(position).getStatus() == 1)
+                viewHolder.getPlugStatusTextView().setChecked(true);
+            else
+                viewHolder.getPlugStatusTextView().setChecked(false);
         }
     }
 
@@ -68,7 +73,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         else
             return plugLocalDataSet.size();
     }
-
     /**
      * Provide a reference to the type of views that you are using
      * (custom ViewHolder).
@@ -80,13 +84,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         private final TextView plugNameTextView;
         private final TextView plugLocationTextView;
 
-        public TextView getLatitudeTextView() {
-            return latitudeTextView;
-        }
-
-        public TextView getLongitudeTextView() {
-            return longitudeTextView;
-        }
+        private final Switch plugStatusSwitch;
 
         public ViewHolder(View view) {
             super(view);
@@ -97,7 +95,19 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             longitudeTextView = (TextView) view.findViewById(R.id.longitudeTextView);
             plugNameTextView = (TextView) view.findViewById(R.id.plugNameTextView);
             plugLocationTextView = (TextView) view.findViewById(R.id.plugLocationTextView);
+            plugStatusSwitch = view.findViewById(R.id.plugStatusSwitch);
+        }
 
+        public TextView getLatitudeTextView() {
+            return latitudeTextView;
+        }
+
+        public TextView getLongitudeTextView() {
+            return longitudeTextView;
+        }
+
+        public Switch getPlugStatusTextView() {
+            return plugStatusSwitch;
         }
 
         public TextView getPlugNameTextView() {
@@ -112,4 +122,6 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             return locationTextView;
         }
     }
+
+
 }
