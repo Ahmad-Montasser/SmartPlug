@@ -30,8 +30,8 @@ public class CustomViewModel extends AndroidViewModel {
         return plugLiveData;
     }
 
-    public void addLocation(String locationName) {
-        DBI.addLocation(locationName);
+    public void addLocation(String locationName, double latitude, double longitude) {
+        DBI.addLocation(locationName, latitude, longitude);
     }
 
     public void addPlug(String plugName, String locationName) {

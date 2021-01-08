@@ -1,16 +1,19 @@
 package com.example.smartplug.UI;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -57,10 +60,30 @@ public class AddLocationFragment extends Fragment {
     }
 
     protected void createLocationRequest() {
+        Log.d(TAG, "createLocationRequest");
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                Log.d(TAG, "LocationCallback");
+
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    Log.d("location", "Location received");
+                }
+            }
+        };
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationServices.getFusedLocationProviderClient(getContext()).requestLocationUpdates(locationRequest, locationCallback, null);
+
     }
 
     @Override
@@ -82,23 +105,12 @@ public class AddLocationFragment extends Fragment {
 
                 if (!locationList.contains(myLocation))
                     locationList.add(myLocation);
-                Log.d(TAG, myLocation.getName());
                 locationAdapter.notifyItemRangeInserted(0, locationList.size());
                 locationAdapter.notifyItemRangeRemoved(0, locationList.size());
             }
 
         });
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    Log.d("location", "Location received");
-                }
-            }
-        };
+
     }
 
     @Override
@@ -130,7 +142,9 @@ public class AddLocationFragment extends Fragment {
                     Log.d("location", "Location received" + location.getLatitude() + " " + location.getLongitude());
             }
         });
-
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+                locationCallback,
+                Looper.getMainLooper());
     }
 
     @Override

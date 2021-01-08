@@ -14,8 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
-public class DBInterface implements LocationListener {
-    double locationLatitude = 2, locationLongitude = 2;
+public class DBInterface {
     private MyLocation location;
     private MyPlug plug;
     private FirebaseDatabase database;
@@ -84,7 +83,7 @@ public class DBInterface implements LocationListener {
 
     }
 
-    public void addLocation(String locationName) {
+    public void addLocation(String locationName, double locationLatitude, double locationLongitude) {
         myLocationRef.child(locationName).push();
         myLocationRef.child(locationName).child("Latitude").setValue(locationLatitude);
         myLocationRef.child(locationName).child("Longitude").setValue(locationLongitude);
@@ -98,20 +97,6 @@ public class DBInterface implements LocationListener {
         return plugLiveList;
     }
 
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(@NonNull String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
-
-    }
 
     public void togglePlug(String plugName) {
         myPlugRef.addValueEventListener(new ValueEventListener() {

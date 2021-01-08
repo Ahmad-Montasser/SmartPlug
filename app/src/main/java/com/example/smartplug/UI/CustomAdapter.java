@@ -1,5 +1,6 @@
 package com.example.smartplug.UI;
 
+import android.icu.text.DecimalFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,8 +55,9 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         if (type == 0) {
             viewHolder.getLocationTextView().setText(locationLocalDataSet.get(position).getName());
-            viewHolder.getLatitudeTextView().setText("Lat: " + locationLocalDataSet.get(position).getLatitude());
-            viewHolder.getLongitudeTextView().setText("Long: " + locationLocalDataSet.get(position).getLongitude());
+            DecimalFormat df = new DecimalFormat("#.##");
+            viewHolder.getLatitudeTextView().setText("Lat: " + df.format(locationLocalDataSet.get(position).getLatitude()));
+            viewHolder.getLongitudeTextView().setText("Long: " + df.format(locationLocalDataSet.get(position).getLongitude()));
         } else {
             viewHolder.getPlugNameTextView().setText(plugLocalDataSet.get(position).getPlugName());
             viewHolder.getPlugLocationTextView().setText(plugLocalDataSet.get(position).getLocationName());
