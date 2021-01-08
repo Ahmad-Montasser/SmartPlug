@@ -45,14 +45,14 @@ public class AddLocationFragment extends Fragment {
     private LocationCallback locationCallback;
     private Boolean NeedToShowRequestPermissionRationale = true;
     private int debug = 0;
-    RecyclerView recyclerView;
-    FloatingActionButton addLocationButton;
+    private RecyclerView recyclerView;
+    private FloatingActionButton addLocationButton;
     private final String TAG = "ADDLOCATIONFRAGMENT ======";
-    public static ArrayList<MyLocation> locationList;
-    Context context;
-    CustomAdapter locationAdapter;
-    ButtonListener buttonListener;
-    CustomViewModel customViewModel;
+    private ArrayList<MyLocation> locationList;
+    private Context context;
+    private CustomAdapter locationAdapter;
+    private ButtonListener buttonListener;
+    private CustomViewModel customViewModel;
 
     public AddLocationFragment() {
         super(R.layout.add_location_layout);
@@ -92,10 +92,11 @@ public class AddLocationFragment extends Fragment {
         recyclerView = getView().findViewById(R.id.locationRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         addLocationButton = getView().findViewById(R.id.addLocationButton);
-        buttonListener = new ButtonListener(this);
+        buttonListener = new ButtonListener(this, getViewLifecycleOwner());
         addLocationButton.setOnClickListener(buttonListener);
         locationList = new ArrayList<MyLocation>();
         locationAdapter = new CustomAdapter(locationList, 0);
+        buttonListener = new ButtonListener(this, getViewLifecycleOwner());
         recyclerView.setAdapter(locationAdapter);
         createLocationRequest();
         customViewModel = ViewModelProviders.of(this).get(CustomViewModel.class);

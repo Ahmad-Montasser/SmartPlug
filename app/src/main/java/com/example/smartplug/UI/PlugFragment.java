@@ -43,7 +43,7 @@ public class PlugFragment extends Fragment {
         recyclerView = getView().findViewById(R.id.plugRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         addPlugButton = getView().findViewById(R.id.addPlugButton);
-        buttonListener = new ButtonListener(this);
+        buttonListener = new ButtonListener(this, getViewLifecycleOwner());
         addPlugButton.setOnClickListener(buttonListener);
         plugList = new ArrayList<MyPlug>();
         plugAdapter = new CustomAdapter(plugList, 1);
