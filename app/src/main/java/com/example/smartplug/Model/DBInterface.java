@@ -13,6 +13,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 
 public class DBInterface {
     private MyLocation location;
@@ -22,6 +24,8 @@ public class DBInterface {
     private DatabaseReference myPlugRef;
     private MutableLiveData<MyLocation> locationLiveList;
     private MutableLiveData<MyPlug> plugLiveList;
+    private final String TAG = "DBI ======";
+    private ArrayList<MyPlug> pluglist;
 
     public DBInterface() {
         database = FirebaseDatabase.getInstance();
@@ -29,11 +33,11 @@ public class DBInterface {
         myLocationRef = database.getReference("/Locations");
         locationLiveList = new MutableLiveData<MyLocation>();
         plugLiveList = new MutableLiveData<MyPlug>();
+        pluglist = new ArrayList<MyPlug>();
         DBFetch();
     }
 
     private void DBFetch() {
-
         myLocationRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -62,6 +66,9 @@ public class DBInterface {
                         if (ds.hasChild("Location") && ds.hasChild("Status")) {
                             plug = new MyPlug(ds.getKey(), ds.child("Location").getValue().toString(),
                                     Integer.parseInt(ds.child("Status").getValue().toString()));
+                            if (!pluglist.contains(plug))
+                                pluglist.add(plug);
+                            Log.d(TAG, plug.plugName);
                             plugLiveList.setValue(plug);
                         }
                     }
@@ -77,6 +84,7 @@ public class DBInterface {
     }
 
     public void addPlug(String plugName, String locationName) {
+        MyPlug p = new MyPlug(plugName, locationName, 0);
         myPlugRef.child(plugName).push();
         myPlugRef.child(plugName).child("Location").setValue(locationName);
         myPlugRef.child(plugName).child("Status").setValue(0);
@@ -127,5 +135,19 @@ public class DBInterface {
 
             }
         });
+    }
+
+    public void setPlugStatus(String locationName, int status) {
+        DBFetch();
+        Log.d(TAG, locationName + " " + status);
+        Log.d(TAG, pluglist.size() + " size");
+        for (MyPlug p : pluglist) {
+            Log.d(TAG, p.getLocationName() + "dsds");
+
+            if (p.getLocationName().equals(locationName)) {
+                Log.d(TAG, p.getLocationName() + "aaaaa");
+                myPlugRef.child(p.getPlugName()).child("Status").setValue(status);
+            }
+        }
     }
 }

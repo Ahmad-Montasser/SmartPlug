@@ -29,7 +29,7 @@ public class MyPlug {
     @Override
     public boolean equals(@Nullable Object obj) {
         MyPlug object = (MyPlug) obj;
-        if (object.getPlugName() == this.plugName)
+        if (object.getPlugName().equals(this.plugName))
             return true;
         else
             return false;

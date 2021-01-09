@@ -12,6 +12,9 @@
         android:roundIcon="@mipmap/new_ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.SmartPlug">
+        <receiver android:name=".Model.GeofenceBroadcastReceiver">
+
+        </receiver>
         <activity android:name=".UI.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

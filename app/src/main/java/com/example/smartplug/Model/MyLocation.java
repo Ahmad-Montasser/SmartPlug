@@ -6,7 +6,7 @@ public class MyLocation {
     private String name;
     private double longitude, latitude;
 
-    public MyLocation(String name, double longitude, double latitude) {
+    public MyLocation(String name, double latitude, double longitude) {
         this.name = name;
         this.longitude = longitude;
         this.latitude = latitude;

@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.smartplug.Model.Permissions;
 import com.example.smartplug.ViewModel.CustomViewModel;
 import com.example.smartplug.Model.MyPlug;
 import com.example.smartplug.R;
@@ -21,6 +22,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 
 public class PlugFragment extends Fragment {
+    int FINE_LOCATION_PERMISSION_REQUEST_CODE = 99;
+    int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 100;
+    int COARSE_LOCATION_PERMISSION_REQUEST_CODE = 101;
+
     RecyclerView recyclerView;
     FloatingActionButton addPlugButton;
     ArrayList<MyPlug> plugList;
@@ -29,6 +34,7 @@ public class PlugFragment extends Fragment {
     ButtonListener buttonListener;
     private final String TAG = "PLUGFRAGMENT ======";
     CustomViewModel customViewModel;
+    ArrayList<MyPlug> dummy = new ArrayList<MyPlug>();
 
     public PlugFragment() {
         super(R.layout.plugs_layout);
@@ -52,14 +58,37 @@ public class PlugFragment extends Fragment {
         customViewModel.getPlugLiveData().observe(getViewLifecycleOwner(), new Observer<MyPlug>() {
             @Override
             public void onChanged(MyPlug myPlug) {
-                if (!plugList.contains(myPlug))
+                if (!plugList.contains(myPlug)) {
                     plugList.add(myPlug);
-                plugAdapter.notifyItemRangeInserted(0, plugList.size());
-                plugAdapter.notifyItemRangeRemoved(0, plugList.size());
+                } else {
+                    ArrayList<MyPlug> toRemove = new ArrayList<>();
+                    ArrayList<MyPlug> toAdd = new ArrayList<>();
+
+                    for (MyPlug p : plugList) {
+
+                        if (p.getStatus() != myPlug.getStatus() && p.equals(myPlug)) {
+                            Log.d(TAG, p.getPlugName() + " " + myPlug.getPlugName() + "  " + p.getStatus() + "  " + myPlug.getStatus());
+                            toRemove.add(p);
+                            toAdd.add(myPlug);
+                        }
+                    }
+                    plugList.removeAll(toRemove);
+                    plugList.addAll(toAdd);
+                }
+                plugAdapter.notifyDataSetChanged();
+
             }
         });
     }
 
-
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!(Permissions.isAccessCoarseLocationGranted(getContext()) && Permissions.isAccessFineLocationGranted(getContext()))) {
+            Permissions.requestAccessFineLocationPermission(getActivity(), FINE_LOCATION_PERMISSION_REQUEST_CODE);
+            Permissions.requestAccessBackgroundLocationPermission(getActivity(), BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE);
+            Permissions.requestAccessCoarseLocationPermission(getActivity(), COARSE_LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
 
 }

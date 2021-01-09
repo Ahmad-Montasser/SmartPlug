@@ -2,7 +2,9 @@ package com.example.smartplug.UI;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -20,11 +22,16 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.smartplug.Model.GeofenceBroadcastReceiver;
 import com.example.smartplug.ViewModel.CustomViewModel;
 import com.example.smartplug.Model.MyLocation;
 import com.example.smartplug.Model.Permissions;
 import com.example.smartplug.R;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -44,7 +51,6 @@ public class AddLocationFragment extends Fragment {
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private Boolean NeedToShowRequestPermissionRationale = true;
-    private int debug = 0;
     private RecyclerView recyclerView;
     private FloatingActionButton addLocationButton;
     private final String TAG = "ADDLOCATIONFRAGMENT ======";
@@ -53,28 +59,35 @@ public class AddLocationFragment extends Fragment {
     private CustomAdapter locationAdapter;
     private ButtonListener buttonListener;
     private CustomViewModel customViewModel;
+    PendingIntent geofencePendingIntent = null;
+    ArrayList<Geofence> geofenceList;
+    private GeofencingClient geofencingClient;
 
     public AddLocationFragment() {
         super(R.layout.add_location_layout);
         context = getContext();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+    }
+
     protected void createLocationRequest() {
         Log.d(TAG, "createLocationRequest");
         locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
+        locationRequest.setInterval(5000);
+        locationRequest.setFastestInterval(2500);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 Log.d(TAG, "LocationCallback");
 
-                if (locationResult == null) {
-                    return;
-                }
                 for (Location location : locationResult.getLocations()) {
-                    Log.d("location", "Location received");
+                    Log.d("location", "Location received" + location.getLongitude() + "  " + location.getLatitude());
+
                 }
             }
         };
@@ -84,6 +97,13 @@ public class AddLocationFragment extends Fragment {
         }
         LocationServices.getFusedLocationProviderClient(getContext()).requestLocationUpdates(locationRequest, locationCallback, null);
 
+    }
+
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_EXIT);
+        builder.addGeofences(geofenceList);
+        return builder.build();
     }
 
     @Override
@@ -97,6 +117,12 @@ public class AddLocationFragment extends Fragment {
         locationList = new ArrayList<MyLocation>();
         locationAdapter = new CustomAdapter(locationList, 0);
         buttonListener = new ButtonListener(this, getViewLifecycleOwner());
+        geofencingClient = LocationServices.getGeofencingClient(getContext());
+        geofenceList = new ArrayList<Geofence>();
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+
         recyclerView.setAdapter(locationAdapter);
         createLocationRequest();
         customViewModel = ViewModelProviders.of(this).get(CustomViewModel.class);
@@ -104,8 +130,35 @@ public class AddLocationFragment extends Fragment {
             @Override
             public void onChanged(MyLocation myLocation) {
 
-                if (!locationList.contains(myLocation))
+                if (!locationList.contains(myLocation)) {
+                    Log.d(TAG, "  Lat:  " + myLocation.getLatitude() + "  Long:  " + myLocation.getLongitude());
                     locationList.add(myLocation);
+                    geofenceList.add(new Geofence.Builder()
+
+                            .setRequestId(myLocation.getName())
+
+                            .setCircularRegion(
+                                    myLocation.getLatitude(),
+                                    myLocation.getLongitude(),
+                                    100
+                            )
+                            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER |
+                                    Geofence.GEOFENCE_TRANSITION_EXIT)
+                            .build());
+
+                    Log.d(TAG, myLocation.getName());
+                    if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+                    geofencingClient.addGeofences(getGeofencingRequest(), getGeofencePendingIntent()).addOnSuccessListener(getActivity(), new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "geofencingClient onSuccess");
+                        }
+                    });
+
+                }
                 locationAdapter.notifyItemRangeInserted(0, locationList.size());
                 locationAdapter.notifyItemRangeRemoved(0, locationList.size());
             }
@@ -114,11 +167,21 @@ public class AddLocationFragment extends Fragment {
 
     }
 
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (geofencePendingIntent != null) {
+            return geofencePendingIntent;
+        }
+        Intent intent = new Intent(getActivity(), GeofenceBroadcastReceiver.class);
+        geofencePendingIntent = PendingIntent.getBroadcast(getContext(), 0, intent, PendingIntent.
+                FLAG_UPDATE_CURRENT);
+        return geofencePendingIntent;
+    }
+
     @Override
     public void onStart() {
         super.onStart();
         if (Permissions.isAccessCoarseLocationGranted(getContext())) {
-            Log.d(TAG, "dfsfsdfsdfdsddf");
             if (Permissions.isLocationEnabled(getActivity())) {
                 setUpLocationListener();
             } else {

@@ -42,4 +42,7 @@ public class CustomViewModel extends AndroidViewModel {
         DBI.togglePlug(plugName);
     }
 
+    public void setPlugStatus(String plugName, int status) {
+        DBI.setPlugStatus(plugName, status);
+    }
 }

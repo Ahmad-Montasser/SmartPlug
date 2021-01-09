@@ -22,10 +22,13 @@ import androidx.lifecycle.ViewModelProviders;
 import com.example.smartplug.Model.MyLocation;
 import com.example.smartplug.ViewModel.CustomViewModel;
 import com.example.smartplug.R;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ButtonListener implements View.OnClickListener {
     double locationLatitude = 2, locationLongitude = 2;
@@ -43,7 +46,6 @@ public class ButtonListener implements View.OnClickListener {
         customViewModel = ViewModelProviders.of(f).get(CustomViewModel.class);
         arrayAdapter = new ArrayAdapter<String>(context, android.R.layout.select_dialog_singlechoice);
         locationList = new ArrayList<MyLocation>();
-        6
         customViewModel.getLocationLiveData().observe(LO, new Observer<MyLocation>() {
             @Override
             public void onChanged(MyLocation myLocation) {
@@ -85,6 +87,8 @@ public class ButtonListener implements View.OnClickListener {
                                 locationLatitude = location.getLatitude();
                                 locationLongitude = location.getLongitude();
                                 customViewModel.addLocation(locationName, locationLatitude, locationLongitude);
+
+
                             }
                         });
                     }
@@ -112,6 +116,7 @@ public class ButtonListener implements View.OnClickListener {
                             return;
                         } else
                             customViewModel.addPlug(plugName, plugLocationName);
+
                     }
                 });
                 alertDialogueBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
