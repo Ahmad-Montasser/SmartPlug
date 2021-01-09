@@ -1,5 +1,6 @@
 package com.example.smartplug.UI;
 
+import android.graphics.Color;
 import android.icu.text.DecimalFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,10 +62,14 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         } else {
             viewHolder.getPlugNameTextView().setText(plugLocalDataSet.get(position).getPlugName());
             viewHolder.getPlugLocationTextView().setText(plugLocalDataSet.get(position).getLocationName());
-            if (plugLocalDataSet.get(position).getStatus() == 1)
-                viewHolder.getPlugStatusTextView().setChecked(true);
-            else
-                viewHolder.getPlugStatusTextView().setChecked(false);
+            if (plugLocalDataSet.get(position).getStatus() == 1) {
+                viewHolder.getPlugStatusTextView().setTextColor(Color.parseColor("#5ec639"));
+                viewHolder.getPlugStatusTextView().setText("ON");
+            } else {
+                viewHolder.getPlugStatusTextView().setTextColor(Color.RED);
+                viewHolder.getPlugStatusTextView().setText("OFF");
+
+            }
         }
     }
 
@@ -86,7 +91,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
         private final TextView plugNameTextView;
         private final TextView plugLocationTextView;
 
-        private final Switch plugStatusSwitch;
+        private final TextView plugStatusSwitch;
 
         public ViewHolder(View view) {
             super(view);
@@ -108,7 +113,7 @@ public class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder
             return longitudeTextView;
         }
 
-        public Switch getPlugStatusTextView() {
+        public TextView getPlugStatusTextView() {
             return plugStatusSwitch;
         }
 
