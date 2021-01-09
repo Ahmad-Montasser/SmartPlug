@@ -13,11 +13,10 @@ import java.util.List;
 
 public class GeofenceBroadcastReceiver extends BroadcastReceiver {
     final String TAG = "GeofenceBroadcastReceiver =====";
-    private DBInterface DBI;
+    private DBInterface DBI = new DBInterface();
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        DBI = new DBInterface();
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = GeofenceStatusCodes

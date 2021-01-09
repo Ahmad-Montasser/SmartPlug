@@ -25,7 +25,7 @@ public class DBInterface {
     private MutableLiveData<MyLocation> locationLiveList;
     private MutableLiveData<MyPlug> plugLiveList;
     private final String TAG = "DBI ======";
-    private ArrayList<MyPlug> pluglist;
+    private static ArrayList<MyPlug> pluglist = new ArrayList<MyPlug>();
 
     public DBInterface() {
         database = FirebaseDatabase.getInstance();
@@ -33,7 +33,6 @@ public class DBInterface {
         myLocationRef = database.getReference("/Locations");
         locationLiveList = new MutableLiveData<MyLocation>();
         plugLiveList = new MutableLiveData<MyPlug>();
-        pluglist = new ArrayList<MyPlug>();
         DBFetch();
     }
 
@@ -142,10 +141,9 @@ public class DBInterface {
         Log.d(TAG, locationName + " " + status);
         Log.d(TAG, pluglist.size() + " size");
         for (MyPlug p : pluglist) {
-            Log.d(TAG, p.getLocationName() + "dsds");
-
+            Log.d(TAG, p.getLocationName());
             if (p.getLocationName().equals(locationName)) {
-                Log.d(TAG, p.getLocationName() + "aaaaa");
+                Log.d(TAG, p.getLocationName());
                 myPlugRef.child(p.getPlugName()).child("Status").setValue(status);
             }
         }
